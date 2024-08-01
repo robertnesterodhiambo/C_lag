@@ -1,64 +1,79 @@
 import os
 
-def process_data(input_data):
-    input_lines = input_data.strip().split('\n')
+MOD = 10**9 + 7
+
+def count_ways_to_place_towers(n, m, d, cities, towers, coverage_file):
+    # Initialize the DP table with zeroes
+    dp = [[0] * (m + 1) for _ in range(m + 1)]
+    dp[0][0] = 1  # Base case: 1 way to place 0 towers with 0 cities covered
     
-    try:
-        n = int(input_lines[0])  # Number of arrays
-    except ValueError as e:
-        print(f"Error while parsing the number of arrays: {e}")
-        return "Error in input format"
+    # Array to store the result for each number of towers
+    result = [0] * m
+
+    # Open the coverage file for writing coverage details
+    with open(coverage_file, 'w') as f_coverage:
+        for i in range(1, m + 1):
+            # Compute coverage range for the current tower
+            coverage_start = towers[i - 1] - d
+            coverage_end = towers[i - 1] + d
+            
+            # Find the range of cities covered by the current tower
+            start_city_idx = 0
+            while start_city_idx < n and cities[start_city_idx] < coverage_start:
+                start_city_idx += 1
+            
+            end_city_idx = start_city_idx
+            while end_city_idx < n and cities[end_city_idx] <= coverage_end:
+                end_city_idx += 1
+            
+            covered_cities = end_city_idx - start_city_idx
+
+            # Write the coverage details to the file
+            f_coverage.write(f"Tower {i}: Coverage range [{coverage_start}, {coverage_end}], Covered cities: {covered_cities}\n")
+            
+            # Update DP table based on the number of towers and covered cities
+            for k in range(1, i + 1):
+                dp[i][k] = dp[i - 1][k] % MOD
+                if covered_cities >= k:
+                    dp[i][k] = (dp[i][k] + dp[i - 1][k - 1]) % MOD
+
+            # Store the result for the current number of towers
+            result[i - 1] = dp[i][i]
+
+    return result
+
+def process_input(input_file, coverage_file):
+    with open(input_file, 'r') as f:
+        lines = f.read().strip().split('\n')
     
-    arrays = []
+    C = int(lines[0])
     index = 1
+    results = []
     
-    while index < len(input_lines):
-        try:
-            k = int(input_lines[index])  # Number of elements in the current array
-            
-            # Convert all elements in the next line to integers
-            arr = list(map(int, input_lines[index + 1].strip().split()))
-            
-            if len(arr) != k:
-                raise ValueError("Number of elements does not match the specified count")
-            
-            arrays.append(arr)
-            index += 2
-        except ValueError as e:
-            print(f"Error while parsing array data: {e}")
-            return "Error in input format"
+    for _ in range(C):
+        n, m, d = map(int, lines[index].split())
+        cities = list(map(int, lines[index + 1].split()))
+        towers = list(map(int, lines[index + 2].split()))
+        index += 3
+        results.append(count_ways_to_place_towers(n, m, d, cities, towers, coverage_file))
     
-    outputs = []
-    for arr in arrays:
-        if not arr:
-            outputs.append("0")
-            continue
+    return results
+
+def main():
+    base_dir = '/home/dragon/Git/C_lag/CAS/test_data'
+    folders = ['01', '02', '03', '04', '05']
+    
+    for folder in folders:
+        input_file = os.path.join(base_dir, folder, 'input')
+        output_file = os.path.join(base_dir, folder, 'output')
+        coverage_file = os.path.join(base_dir, folder, 'coverage.txt')
         
-        max_elem = max(arr)
-        result = [0] * (max_elem + 1)
-        for num in arr:
-            result[num] += 1
-        outputs.append(" ".join(map(str, result)))
-    
-    return "\n".join(outputs)
+        print(f"Processing {input_file}...")
+        results = process_input(input_file, coverage_file)
+        
+        with open(output_file, 'w') as f:
+            for result in results:
+                f.write(' '.join(map(str, result)) + '\n')
 
-def process_files_in_directory(directory):
-    for folder in range(1, 6):
-        folder_path = os.path.join(directory, f"{folder:02d}")
-        input_file_path = os.path.join(folder_path, "input")
-        output_file_path = os.path.join(folder_path, "output")
-
-        if os.path.exists(input_file_path):
-            with open(input_file_path, 'r') as input_file:
-                input_data = input_file.read()
-                output_data = process_data(input_data)
-                
-                with open(output_file_path, 'w') as output_file:
-                    output_file.write(output_data)
-                print(f"Processed {input_file_path} and wrote output to {output_file_path}")
-        else:
-            print(f"Input file {input_file_path} does not exist.")
-
-if __name__ == "__main__":
-    directory = "/home/dragon/Git/C_lag/CAS/test_data"
-    process_files_in_directory(directory)
+if __name__ == '__main__':
+    main()
