@@ -1,79 +1,111 @@
-import os
-
 MOD = 10**9 + 7
 
-def count_ways_to_place_towers(n, m, d, cities, towers, coverage_file):
-    # Initialize the DP table with zeroes
-    dp = [[0] * (m + 1) for _ in range(m + 1)]
-    dp[0][0] = 1  # Base case: 1 way to place 0 towers with 0 cities covered
-    
-    # Array to store the result for each number of towers
-    result = [0] * m
+class ModInt:
+    def __init__(self, x=0):
+        x %= MOD
+        if x < 0:
+            x += MOD
+        self.val = x
 
-    # Open the coverage file for writing coverage details
-    with open(coverage_file, 'w') as f_coverage:
-        for i in range(1, m + 1):
-            # Compute coverage range for the current tower
-            coverage_start = towers[i - 1] - d
-            coverage_end = towers[i - 1] + d
-            
-            # Find the range of cities covered by the current tower
-            start_city_idx = 0
-            while start_city_idx < n and cities[start_city_idx] < coverage_start:
-                start_city_idx += 1
-            
-            end_city_idx = start_city_idx
-            while end_city_idx < n and cities[end_city_idx] <= coverage_end:
-                end_city_idx += 1
-            
-            covered_cities = end_city_idx - start_city_idx
+    def __iadd__(self, other):
+        self.val += other.val
+        if self.val >= MOD:
+            self.val -= MOD
+        return self
 
-            # Write the coverage details to the file
-            f_coverage.write(f"Tower {i}: Coverage range [{coverage_start}, {coverage_end}], Covered cities: {covered_cities}\n")
-            
-            # Update DP table based on the number of towers and covered cities
-            for k in range(1, i + 1):
-                dp[i][k] = dp[i - 1][k] % MOD
-                if covered_cities >= k:
-                    dp[i][k] = (dp[i][k] + dp[i - 1][k - 1]) % MOD
+    def __isub__(self, other):
+        self.val -= other.val
+        if self.val < 0:
+            self.val += MOD
+        return self
 
-            # Store the result for the current number of towers
-            result[i - 1] = dp[i][i]
+    def __add__(self, other):
+        result = ModInt(self.val)
+        result += other
+        return result
 
-    return result
+    def __sub__(self, other):
+        result = ModInt(self.val)
+        result -= other
+        return result
 
-def process_input(input_file, coverage_file):
-    with open(input_file, 'r') as f:
-        lines = f.read().strip().split('\n')
-    
-    C = int(lines[0])
-    index = 1
-    results = []
-    
-    for _ in range(C):
-        n, m, d = map(int, lines[index].split())
-        cities = list(map(int, lines[index + 1].split()))
-        towers = list(map(int, lines[index + 2].split()))
-        index += 3
-        results.append(count_ways_to_place_towers(n, m, d, cities, towers, coverage_file))
-    
-    return results
+    def __mul__(self, other):
+        return ModInt(self.val * other.val)
+
+    def __imul__(self, other):
+        self.val = (self.val * other.val) % MOD
+        return self
+
+    def __repr__(self):
+        return str(self.val)
+
+def compute_ways(a, b, d):
+    n = len(a)
+    m = len(b)
+    add = max(a[-1], b[-1]) + d + 1
+    a.append(add)
+    b.append(add)
+    n += 1
+    m += 1
+
+    dp = [[ModInt(0) for _ in range(m+1)] for _ in range(m)]
+    sdp = [[ModInt(0) for _ in range(m+1)] for _ in range(m)]
+
+    for i in range(m):
+        dp[i][1] = ModInt(int(a[0] >= b[i] - d))
+        sdp[i][1] = dp[i][1] + (sdp[i-1][1] if i > 0 else ModInt(0))
+
+    for j in range(2, m+1):
+        for i in range(m):
+            last_uncovered = lower_bound(a, b[i] - d) - 1
+            istar = 0
+            if last_uncovered >= 0:
+                istar = lower_bound(b, a[last_uncovered] - d)
+            if istar < i:
+                dp[i][j] = sdp[i-1][j-1] - (sdp[istar-1][j-1] if istar > 0 else ModInt(0))
+            else:
+                dp[i][j] = ModInt(0)
+            sdp[i][j] = sdp[i-1][j] + dp[i][j]
+
+    return [dp[m-1][j] for j in range(2, m+1)]
+
+def lower_bound(arr, x):
+    low, high = 0, len(arr)
+    while low < high:
+        mid = (low + high) // 2
+        if arr[mid] < x:
+            low = mid + 1
+        else:
+            high = mid
+    return low
 
 def main():
-    base_dir = '/home/dragon/Git/C_lag/CAS/test_data'
-    folders = ['01', '02', '03', '04', '05']
-    
-    for folder in folders:
-        input_file = os.path.join(base_dir, folder, 'input')
-        output_file = os.path.join(base_dir, folder, 'output')
-        coverage_file = os.path.join(base_dir, folder, 'coverage.txt')
-        
-        print(f"Processing {input_file}...")
-        results = process_input(input_file, coverage_file)
-        
-        with open(output_file, 'w') as f:
-            for result in results:
-                f.write(' '.join(map(str, result)) + '\n')
+    input_file_path = r'/home/dragon/Git/C_lag/CAS/test_data/01/input'  # Replace with the actual path to your input file
+    output_file_path = r'/home/dragon/Git/C_lag/CAS/test_data/01/output'  # Replace with the actual path to your output file
 
-if __name__ == '__main__':
+    with open(input_file_path, 'r') as infile:
+        lines = infile.readlines()
+
+    tc = int(lines[0].strip())
+    index = 1
+
+    results = []
+    for _ in range(tc):
+        n, m, k = map(int, lines[index].strip().split())
+        index += 1
+
+        a = list(map(int, lines[index].strip().split()))
+        index += 1
+
+        b = list(map(int, lines[index].strip().split()))
+        index += 1
+
+        result = compute_ways(a, b, k)
+        results.append(result)
+
+    with open(output_file_path, 'w') as outfile:
+        for result in results:
+            outfile.write(" ".join(map(str, result)) + "\n")
+
+if __name__ == "__main__":
     main()

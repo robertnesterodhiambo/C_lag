@@ -80,8 +80,8 @@ def lower_bound(arr, x):
     return low
 
 def main():
-    input_file_path = r'C:\Users\NewMoon\Desktop\input'  # Replace with the actual path to your input file
-    output_file_path = r'C:\Users\NewMoon\Desktop\output'  # Replace with the actual path to your output file
+    input_file_path = r'/home/dragon/Git/C_lag/CAS/test_data/01/input'  # Replace with the actual path to your input file
+    output_file_path = r'/home/dragon/Git/C_lag/CAS/test_data/01/output'  # Replace with the actual path to your output file
 
     with open(input_file_path, 'r') as infile:
         lines = infile.readlines()
