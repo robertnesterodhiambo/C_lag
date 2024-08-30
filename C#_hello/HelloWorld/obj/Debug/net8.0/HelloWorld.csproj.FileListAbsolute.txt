@@ -1,0 +1,15 @@
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/bin/Debug/net8.0/HelloWorld
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/bin/Debug/net8.0/HelloWorld.deps.json
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/bin/Debug/net8.0/HelloWorld.runtimeconfig.json
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/bin/Debug/net8.0/HelloWorld.dll
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/bin/Debug/net8.0/HelloWorld.pdb
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/HelloWorld.GeneratedMSBuildEditorConfig.editorconfig
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/HelloWorld.AssemblyInfoInputs.cache
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/HelloWorld.AssemblyInfo.cs
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/HelloWorld.csproj.CoreCompileInputs.cache
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/HelloWorld.sourcelink.json
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/HelloWorld.dll
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/refint/HelloWorld.dll
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/HelloWorld.pdb
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/HelloWorld.genruntimeconfig.cache
+/home/dragon/Git/C_lag/C#_hello/HelloWorld/obj/Debug/net8.0/ref/HelloWorld.dll
